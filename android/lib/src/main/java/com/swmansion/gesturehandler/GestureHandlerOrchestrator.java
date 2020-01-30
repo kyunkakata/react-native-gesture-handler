@@ -30,6 +30,14 @@ public class GestureHandlerOrchestrator {
           new Comparator<GestureHandler>() {
             @Override
             public int compare(GestureHandler a, GestureHandler b) {
+              // if a is null or null --> choose the not-null GestureHandler.
+              if (a == null && b != null){
+                return 1;
+              } else if (b == null && a != null ) {
+                return -1;
+              } else if (a == null && b == null) {
+                return 0;// if A and B is null --> return equal.
+              }
               if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
                 // both A and B are either active or awaiting activation, in which case we prefer one that
                 // has activated (or turned into "awaiting" state) earlier
