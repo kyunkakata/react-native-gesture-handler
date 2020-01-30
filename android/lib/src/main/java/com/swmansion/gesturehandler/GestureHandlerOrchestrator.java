@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -99,19 +99,24 @@ public class GestureHandlerOrchestrator {
    * Should be called from the view wrapper
    */
   public boolean onTouchEvent(MotionEvent event) {
-    mIsHandlingTouch = true;
-    int action = event.getActionMasked();
-    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
-      extractGestureHandlers(event);
-    } else if (action == MotionEvent.ACTION_CANCEL) {
-      cancelAll();
+    //kyun: This function cause many bugs. I used try catch to prevent the app crash from unknown problems.
+    try {
+      mIsHandlingTouch = true;
+      int action = event.getActionMasked();
+      if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+        extractGestureHandlers(event);
+      } else if (action == MotionEvent.ACTION_CANCEL) {
+        cancelAll();
+      }
+      deliverEventToGestureHandlers(event);
+      mIsHandlingTouch = false;
+      if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
+        cleanupFinishedHandlers();
+      }
+      return true;
+    } catch (Exception e){
+      Log.d("GestureException:", e.toString());
     }
-    deliverEventToGestureHandlers(event);
-    mIsHandlingTouch = false;
-    if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
-      cleanupFinishedHandlers();
-    }
-    return true;
   }
 
   private void scheduleFinishedHandlersCleanup() {
