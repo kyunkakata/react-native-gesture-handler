@@ -6,7 +6,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
+import android.util.Log;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,6 +30,14 @@ public class GestureHandlerOrchestrator {
           new Comparator<GestureHandler>() {
             @Override
             public int compare(GestureHandler a, GestureHandler b) {
+              // if a is null or null --> choose the not-null GestureHandler.
+              if (a == null && b != null){
+                return 1;
+              } else if (b == null && a != null ) {
+                return -1;
+              } else if (a == null && b == null) {
+                return 0;// if A and B is null --> return equal.
+              }
               if (a.mIsActive && b.mIsActive || a.mIsAwaiting && b.mIsAwaiting) {
                 // both A and B are either active or awaiting activation, in which case we prefer one that
                 // has activated (or turned into "awaiting" state) earlier
@@ -91,19 +99,24 @@ public class GestureHandlerOrchestrator {
    * Should be called from the view wrapper
    */
   public boolean onTouchEvent(MotionEvent event) {
-    mIsHandlingTouch = true;
-    int action = event.getActionMasked();
-    if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
-      extractGestureHandlers(event);
-    } else if (action == MotionEvent.ACTION_CANCEL) {
-      cancelAll();
+    //kyun: This function cause many bugs. I used try catch to prevent the app crash from unknown problems.
+    try {
+      mIsHandlingTouch = true;
+      int action = event.getActionMasked();
+      if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+        extractGestureHandlers(event);
+      } else if (action == MotionEvent.ACTION_CANCEL) {
+        cancelAll();
+      }
+      deliverEventToGestureHandlers(event);
+      mIsHandlingTouch = false;
+      if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
+        cleanupFinishedHandlers();
+      }
+      return true;
+    } catch (Exception e){
+      Log.d("GestureException:", e.toString());
     }
-    deliverEventToGestureHandlers(event);
-    mIsHandlingTouch = false;
-    if (mFinishedHandlersCleanupScheduled && mHandlingChangeSemaphore == 0) {
-      cleanupFinishedHandlers();
-    }
-    return true;
   }
 
   private void scheduleFinishedHandlersCleanup() {
