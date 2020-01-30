@@ -20,36 +20,33 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+project.xcworkspace
 
-# CocoaPods
-**/ios/Pods
-
-# Android/IntelliJ
+# Android/IJ
 #
-build/
+*.iml
 .idea
 .gradle
 local.properties
-*.iml
 
 # node.js
 #
 node_modules/
 npm-debug.log
-yarn-error.log
-
-# BUCK
-buck-out/
-\.buckd/
-*.keystore
-!debug.keystore
-
-# Expo
-/.expo
+package-lock.json
 
 # vscode
 jsconfig.json
-.classpath
 .project
-.settings/
 .vscode
+
+# BUCK
+buck-out/
+bin/
+\.buckd/
+android/app/libs
+android/keystores/debug.keystore
+
+# yarn
+yarn-error.log
+

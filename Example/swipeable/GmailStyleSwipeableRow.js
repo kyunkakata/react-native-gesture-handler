@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View, I18nManager } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 
 import { RectButton } from 'react-native-gesture-handler';
 
@@ -69,20 +69,16 @@ const styles = StyleSheet.create({
   leftAction: {
     flex: 1,
     backgroundColor: '#388e3c',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    flexDirection: I18nManager.isRTL ? 'row' : 'row-reverse'
+    justifyContent: 'center',
   },
   actionIcon: {
     width: 30,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   rightAction: {
-    alignItems: 'center',
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+    alignItems: 'flex-end',
     backgroundColor: '#dd2c00',
     flex: 1,
-    justifyContent: 'flex-end'
-  }
+    justifyContent: 'center',
+  },
 });
-

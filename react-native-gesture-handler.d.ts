@@ -1,4 +1,4 @@
-// Project: https://github.com/software-mansion/react-native-gesture-handler
+// Project: https://github.com/kmagiera/react-native-gesture-handler
 // TypeScript Version: 2.6.2
 
 declare module 'react-native-gesture-handler' {
@@ -9,6 +9,7 @@ declare module 'react-native-gesture-handler' {
     ScrollViewProperties,
     SwitchProperties,
     TextInputProperties,
+    ToolbarAndroidProperties,
     DrawerLayoutAndroidProperties,
     TouchableHighlightProperties,
     TouchableOpacityProperties,
@@ -17,7 +18,6 @@ declare module 'react-native-gesture-handler' {
     Insets,
     ViewStyle,
     StyleProp,
-    ViewProps,
   } from 'react-native';
 
   /* GESTURE HANDLER STATE */
@@ -127,12 +127,6 @@ declare module 'react-native-gesture-handler' {
     y: number;
     absoluteX: number;
     absoluteY: number;
-  }
-
-  export interface LongPressGestureHandlerGestureEvent
-    extends GestureHandlerGestureEvent {
-    nativeEvent: GestureHandlerGestureEventNativeEvent &
-      LongPressGestureHandlerEventExtra;
   }
 
   interface PanGestureHandlerEventExtra {
@@ -284,7 +278,7 @@ declare module 'react-native-gesture-handler' {
     extends GestureHandlerProperties {
     minDurationMs?: number;
     maxDist?: number;
-    onGestureEvent?: (event: LongPressGestureHandlerGestureEvent) => void;
+    onGestureEvent?: (event: GestureHandlerGestureEvent) => void;
     onHandlerStateChange?: (event: LongPressGestureHandlerStateChangeEvent) => void;
   }
 
@@ -378,7 +372,6 @@ declare module 'react-native-gesture-handler' {
     extends NativeViewGestureHandlerProperties {
     exclusive?: boolean;
     testID?: string;
-    accessibilityLabel?: string;
   }
 
   export interface BaseButtonProperties extends RawButtonProperties {
@@ -410,25 +403,21 @@ declare module 'react-native-gesture-handler' {
     BorderlessButtonProperties
   > {}
 
-  export interface ContainedTouchableProperties {
-    containerStyle?: StyleProp<ViewStyle>
-  }
-
   export class TouchableHighlight extends React.Component<
-    TouchableHighlightProperties | ContainedTouchableProperties
-    > {}
+    TouchableHighlightProperties
+  > {}
 
   export class TouchableNativeFeedback extends React.Component<
-    TouchableNativeFeedbackProperties | ContainedTouchableProperties
-    > {}
+    TouchableNativeFeedbackProperties
+  > {}
 
   export class TouchableOpacity extends React.Component<
-    TouchableOpacityProperties | ContainedTouchableProperties
-    > {}
+    TouchableOpacityProperties
+  > {}
 
   export class TouchableWithoutFeedback extends React.Component<
-    TouchableWithoutFeedbackProperties | ContainedTouchableProperties
-    > {}
+    TouchableWithoutFeedbackProperties
+  > {}
 
   /* GESTURE HANDLER WRAPPED CLASSES */
 
@@ -444,6 +433,10 @@ declare module 'react-native-gesture-handler' {
     NativeViewGestureHandlerProperties & TextInputProperties
   > {}
 
+  export class ToolbarAndroid extends React.Component<
+    NativeViewGestureHandlerProperties & ToolbarAndroidProperties
+  > {}
+
   export class DrawerLayoutAndroid extends React.Component<
     NativeViewGestureHandlerProperties & DrawerLayoutAndroidProperties
   > {}
@@ -454,25 +447,21 @@ declare module 'react-native-gesture-handler' {
     NativeViewGestureHandlerProperties & FlatListProperties<ItemT>
   > {}
 
-  export const GestureHandlerRootView: ReactComponentType<ViewProps>;
-
-  export function gestureHandlerRootHOC<P = {}>(
-    Component: React.ComponentType<P>,
+  export function gestureHandlerRootHOC(
+    Component: React.ComponentType<any>,
     containerStyles?: StyleProp<ViewStyle>
-  ): React.ComponentType<P>;
+  ): React.ComponentType<any>;
 
-  export function createNativeWrapper<P = {}>(
-    Component: React.ComponentType<P>,
+  export function createNativeWrapper(
+    Component: React.ComponentType<any>,
     config: NativeViewGestureHandlerProperties
-  ): React.ComponentType<P>;
+  ): React.ComponentType<any>;
 }
 
 declare module 'react-native-gesture-handler/Swipeable' {
   import { Animated, StyleProp, ViewStyle } from 'react-native';
-  import { PanGestureHandlerProperties } from 'react-native-gesture-handler'
-  type SwipeableExcludes = Exclude<keyof PanGestureHandlerProperties, 'onGestureEvent' | 'onHandlerStateChange'>
 
-  interface SwipeableProperties extends Pick<PanGestureHandlerProperties, SwipeableExcludes> {
+  interface SwipeableProperties {
     friction?: number;
     leftThreshold?: number;
     rightThreshold?: number;
@@ -487,32 +476,12 @@ declare module 'react-native-gesture-handler/Swipeable' {
     onSwipeableRightWillOpen?: () => void;
     onSwipeableWillOpen?: () => void;
     onSwipeableWillClose?: () => void;
-    /**
-     *
-     * This map describes the values to use as inputRange for extra interpolation:
-     * AnimatedValue: [startValue, endValue]
-     *
-     * progressAnimatedValue: [0, 1]
-     * dragAnimatedValue: [0, +]
-     *
-     * To support `rtl` flexbox layouts use `flexDirection` styling.
-     * */
     renderLeftActions?: (
-      progressAnimatedValue: Animated.AnimatedInterpolation,
+      progressAnimatedValue: Animated.Value | Animated.AnimatedInterpolation,
       dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
-    /**
-     *
-     * This map describes the values to use as inputRange for extra interpolation:
-     * AnimatedValue: [startValue, endValue]
-     *
-     * progressAnimatedValue: [0, 1]
-     * dragAnimatedValue: [0, -]
-     *
-     * To support `rtl` flexbox layouts use `flexDirection` styling.
-     * */
     renderRightActions?: (
-      progressAnimatedValue: Animated.AnimatedInterpolation,
+      progressAnimatedValue: Animated.Value | Animated.AnimatedInterpolation,
       dragAnimatedValue: Animated.AnimatedInterpolation
     ) => React.ReactNode;
     useNativeAnimations?: boolean;
@@ -563,7 +532,7 @@ declare module 'react-native-gesture-handler/DrawerLayout' {
     hideStatusBar?: boolean;
     statusBarAnimation?: StatusBarAnimation;
     overlayColor?: string;
-    contentContainerStyle?: StyleProp<ViewStyle>;
+    containerStyle?: StyleProp<ViewStyle>;
   }
 
   interface DrawerMovementOptionType {

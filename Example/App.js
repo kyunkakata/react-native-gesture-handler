@@ -1,15 +1,6 @@
 import React from 'react';
-import {
-  Text,
-  View,
-  FlatList,
-  StyleSheet,
-  YellowBox,
-  Platform,
-} from 'react-native';
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
-import { createBrowserApp } from '@react-navigation/web';
-import { createStackNavigator } from 'react-navigation-stack';
+import { Text, View, FlatList, StyleSheet, YellowBox } from 'react-native';
+import { createAppContainer, createStackNavigator } from 'react-navigation';
 import { RectButton, ScrollView } from 'react-native-gesture-handler';
 
 import SwipeableTable from './swipeable';
@@ -98,16 +89,7 @@ class MainScreen extends React.Component {
     title: '✌️ Gesture Handler Demo',
   };
   render() {
-    const data = Object.keys(SCREENS)
-      .map(key => {
-        const item = SCREENS[key];
-        const isDisabled = item.screen.platforms
-          ? !item.screen.platforms.includes(Platform.OS)
-          : false;
-        return { key, title: item.title || key, isDisabled };
-      })
-      .sort((a, b) => !!a.isDisabled - !!b.isDisabled);
-
+    const data = Object.keys(SCREENS).map(key => ({ key }));
     return (
       <FlatList
         style={styles.list}
@@ -130,13 +112,10 @@ const ItemSeparator = () => <View style={styles.separator} />;
 class MainScreenItem extends React.Component {
   _onPress = () => this.props.onPressItem(this.props.item);
   render() {
-    const { title, isDisabled } = this.props.item;
+    const { key } = this.props.item;
     return (
-      <RectButton
-        pointerEvents={isDisabled ? 'none' : 'auto'}
-        style={[styles.button, isDisabled && { opacity: 0.5 }]}
-        onPress={this._onPress}>
-        <Text style={styles.buttonText}>{title}</Text>
+      <RectButton style={styles.button} onPress={this._onPress}>
+        <Text style={styles.buttonText}>{SCREENS[key].title || key}</Text>
       </RectButton>
     );
   }
@@ -144,7 +123,7 @@ class MainScreenItem extends React.Component {
 
 const ExampleApp = createStackNavigator(
   {
-    Main: { screen: MainScreen, path: '' },
+    Main: { screen: MainScreen },
     ...SCREENS,
     TouchableExample: {
       screen: TouchableExample,
@@ -152,12 +131,6 @@ const ExampleApp = createStackNavigator(
     },
   },
   {
-    ...Platform.select({
-      web: {
-        headerMode: 'screen',
-      },
-      default: {},
-    }),
     initialRouteName: 'Main',
   }
 );
@@ -183,14 +156,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const createApp = Platform.select({
-  web: input => createBrowserApp(input, { history: 'hash' }),
-  default: input => createAppContainer(input),
-});
-
-const defaultNavigator = createSwitchNavigator({
-  main: { screen: ExampleApp, path: '' },
-});
-defaultNavigator.path = '';
-
-export default createApp(defaultNavigator);
+export default createAppContainer(ExampleApp);
