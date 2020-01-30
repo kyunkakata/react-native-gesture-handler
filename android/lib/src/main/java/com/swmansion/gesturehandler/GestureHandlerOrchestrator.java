@@ -116,6 +116,7 @@ public class GestureHandlerOrchestrator {
       return true;
     } catch (Exception e){
       Log.d("GestureException:", e.toString());
+      return true;
     }
   }
 
